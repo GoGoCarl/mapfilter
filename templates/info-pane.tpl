@@ -38,4 +38,12 @@
   <th><%= t("ui.info_panel.prompt.visit_date") %>:</th>
   <td><%= getWhen() %></td>
 </tr>
+
+<% getCustom().forEach(function(value) { %>
+  <tr>
+    <th><%= value.key %></th>
+    <td><%= value.value %></td>
+  </tr>
+<% }); %>
+
 </table>

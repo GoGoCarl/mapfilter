@@ -40,6 +40,22 @@ module.exports = require('backbone').Model.extend({
     return lat + ' ' + lon
   },
 
+  getCustom: function() {
+    var custom_values = [];
+    var property_keys = Object.getOwnPropertyNames(this.attributes.properties);
+    for (var index in property_keys) {
+      var key = property_keys[index];
+      var value = this.get(key);
+      if (key.toLowerCase().startsWith('custom_')) {
+        if (typeof(value) === 'string')
+          custom_values.push({key: this._toSentenceCase(key.substr(7)), value: this._toSentenceCase(value) });
+        else if (typeof(value) === 'number')
+          custom_values.push({key: this._toSentenceCase(key.substr(7)), value: value });
+      }
+    }
+    return custom_values;
+  },
+
   getWhat: function () {
     return this._getOther('happening', 'happening_other')
   },
