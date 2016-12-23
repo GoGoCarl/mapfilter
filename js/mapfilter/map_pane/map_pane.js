@@ -22,6 +22,12 @@ module.exports = require('backbone').View.extend({
 
     this.config = options.config
 
+    this._loadStatus = {
+      map: false,
+      tiles: false,
+      tracks: false
+    }
+
     // Initialize the [Leaflet](http://leafletjs.com/) map attaching to this view's element
     console.log('Initializing the map pane')
     var map = this.map = L.map(this.el, {
@@ -74,6 +80,8 @@ module.exports = require('backbone').View.extend({
 
     this.currentBaseLayer = t('ui.map_pane.layers.bing')
 
+    this._loadStatus.map = true;
+
     if (this.config.hasTiles()) {
       var self = this
       var tilesConfig = this.config.getTilesInfo()
@@ -95,19 +103,22 @@ module.exports = require('backbone').View.extend({
           for (var i = 0; i < newLayers.length; i++) {
             self.checkDefaultBaseLayer(newLayers[i], self)
           }
+          self._loadStatus.tiles = true
         },
         error: function (model, resp, opts) {
           console.log('Could not fetch more tile layers. Limited to Bing')
           L.control.layers(baseMaps).addTo(map)
+          self._loadStatus.tiles = true
         }
       })
     } else {
       L.control.layers(baseMaps).addTo(map)
+      this._loadStatus.tiles = true
     }
 
     if (this.config.isTracksEnabled()) {
       var tracksConfig = this.config.getTracksInfo()
-
+      var self = this
       var popup_for = function (map_props) {
         var html = ''
         if (map_props.name) {
@@ -159,11 +170,15 @@ module.exports = require('backbone').View.extend({
         url: tracksConfig.url,
         success: function (data) {
           tracksLayer.addData(data)
+          self._loadStatus.tracks = true
         }
       }).error(function (err) {
         console.log('Error loading tracks json')
         console.log(err)
+        self._loadStatus.tracks = true
       })
+    } else {
+      this._loadStatus.tracks = true
     }
 
     // Object to hold a reference to any markers added to the map
@@ -264,6 +279,10 @@ module.exports = require('backbone').View.extend({
       }
     });
     return markers;
+  },
+
+  isLoaded: function() {
+    return this._loadStatus.map && this._loadStatus.tiles && this._loadStatus.tracks;
   }
 
 })
