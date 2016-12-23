@@ -34,7 +34,7 @@ locale.init = function() {
   for (prop in locale) {
     if (typeof(prop) == 'string' && prop.length == 2 && locale.hasOwnProperty(prop)) {
       var token = '/' + prop;
-      if (windowLoc.startsWith(token + '/') || windowLoc == token) {
+      if (windowLoc.indexOf(token + '/') == 0 || windowLoc == token) {
         loc = prop;
         break;
       }

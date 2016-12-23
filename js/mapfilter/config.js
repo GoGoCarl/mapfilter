@@ -45,7 +45,7 @@ module.exports = require('backbone').Model.extend({
 
   getImageUrl: function(path) {
     if (path)
-      return this.get('imageUrlRoot') + (path.startsWith('/') ? path : ("/" + path));
+      return this.get('imageUrlRoot') + (path.indexOf('/') == 0 ? path : ("/" + path));
   },
 
   getMapCenter: function() {
